@@ -6,6 +6,7 @@ import Login from './login';
 import './App.css';
 import LeetCodeTracker from "./leetcode";
 import StudentList from "./components/StudentList";
+import LeetCode from './leetcode';
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
       <Routes>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/leetcodeTracker" element={<LeetCodeTracker/>} />
+        <Route path="/leetcode" element={<LeetCode/>} />
         <Route path="/students" element={<StudentList/>} />
     
         

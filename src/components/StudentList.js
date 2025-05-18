@@ -1,92 +1,69 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import {
-  Box,
+  Container,
   Typography,
   Card,
   CardContent,
+  Grid,
   CircularProgress,
-  Grid
-} from "@mui/material";
+} from '@mui/material';
 
-const StudentList = () => {
-  const [users, setUsers] = useState([]);
-  const [error, setError] = useState("");
+function StudentList() {
+  const [students, setStudents] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await axios.get("http://localhost:4000/api/leetcode/users");
-        setUsers(res.data);
-      } catch (err) {
-        setError("Failed to fetch student list");
-        console.error(err);
-      } finally {
+    axios.get('http://localhost:5000/api/students')
+      .then(res => {
+        setStudents(res.data);
         setLoading(false);
-      }
-    };
-
-    fetchUsers();
+      })
+      .catch(() => {
+        setError('Failed to load student list');
+        setLoading(false);
+      });
   }, []);
 
-  return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: "#121212",
-        color: "#eee",
-        p: 4,
-      }}
-    >
-      <Typography variant="h4" gutterBottom textAlign="center" color="white">
-        Saved LeetCode Users
-      </Typography>
-
-      {loading ? (
-        <Box textAlign="center" mt={4}>
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Typography color="error" textAlign="center">
-          {error}
-        </Typography>
-      ) : users.length === 0 ? (
-        <Typography textAlign="center">No users saved yet.</Typography>
-      ) : (
-        <Grid container spacing={3} justifyContent="center">
-          {users.map((user, idx) => (
-            <Grid item key={idx} xs={12} sm={8} md={6}>
-              <Card
-                sx={{
-                  backgroundColor: "#f5f5f5",
-                  borderRadius: 3,
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-                  p: 2,
-                  borderLeft: "6px solid #42a5f5",
-                  transition: "transform 0.3s ease",
-                  "&:hover": {
-                    transform: "scale(1.02)",
-                  },
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6" color="primary">
-                    {user.username}
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary">
-                    Solved Problems: {user.totalSolved}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      )}
-    </Box>
+  if (loading) return (
+    <Container maxWidth="md" style={{ marginTop: 50, textAlign: 'center' }}>
+      <CircularProgress />
+    </Container>
   );
-};
+
+  if (error) return (
+    <Container maxWidth="md" style={{ marginTop: 50 }}>
+      <Typography color="error">{error}</Typography>
+    </Container>
+  );
+
+  return (
+    <Container maxWidth="md" style={{ marginTop: 30 }}>
+      <Typography variant="h4" gutterBottom>
+        Student List
+      </Typography>
+      {students.length === 0 && <Typography>No students saved yet.</Typography>}
+      <Grid container spacing={2}>
+        {students.map((student) => (
+          <Grid item xs={12} sm={6} md={4} key={student._id}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6">{student.username}</Typography>
+                <Typography>Total Solved: {student.totalSolved}</Typography>
+                <Typography>Easy: {student.easySolved}</Typography>
+                <Typography>Medium: {student.mediumSolved}</Typography>
+                <Typography>Hard: {student.hardSolved}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
+  );
+}
 
 export default StudentList;
+
 
 

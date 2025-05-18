@@ -6,8 +6,7 @@ import {
 } from "@mui/material";
 import { Link } from 'react-router-dom';
 import { styled, keyframes } from "@mui/system";
-import CodingIcon from "./assets/coding-icon.png"; // Image path
-
+import CodingIcon from "./assets/coding-icon.png.png";
 // Animations
 const typing = keyframes`
   from { width: 0 }
@@ -115,7 +114,7 @@ const Dashboard = () => {
         <Divider sx={{ background: "#fff", width: "80%", my: 2 }} />
         <SidebarItem component={Link} to="/login">Login</SidebarItem>
         <SidebarItem component={Link} to="/dashboard">Dashboard</SidebarItem>
-        <SidebarItem component={Link} to="/leetcodeTracker">LeetCode Tracker</SidebarItem>
+        <SidebarItem component={Link} to="/leetcode">LeetCode Tracker</SidebarItem>
         <SidebarItem component={Link} to="/students">Students</SidebarItem>
       </Sidebar>
 
@@ -184,5 +183,6 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
 
 

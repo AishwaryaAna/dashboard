@@ -1,103 +1,71 @@
-// leetcode.js
-const express = require("express");
-const axios = require("axios");
-const mongoose = require("mongoose");
+import React, { useState } from 'react';
+import axios from 'axios';
+import {
+  Container, TextField, Button, Typography, Card, CardContent,
+} from '@mui/material';
 
-const router = express.Router();
+function LeetCode() {
+  const [username, setUsername] = useState('');
+  const [stats, setStats] = useState(null);
+  const [error, setError] = useState('');
 
-// Mongoose Schema & Model
-const userSchema = new mongoose.Schema({
-  username: { type: String, unique: true, required: true },
-  totalSolved: Number,
-  easySolved: Number,
-  mediumSolved: Number,
-  hardSolved: Number,
-  totalEasy: Number,
-  totalMedium: Number,
-  totalHard: Number,
-});
-
-const User = mongoose.model("User", userSchema);
-
-// GraphQL query
-const leetcodeQuery = (username) => ({
-  query: `
-    query getUserProfile($username: String!) {
-      matchedUser(username: $username) {
-        username
-        submitStats: submitStatsGlobal {
-          acSubmissionNum {
-            difficulty
-            count
-            submissions
-          }
-        }
-      }
+  const fetchStats = async () => {
+    try {
+      const res = await axios.post('http://localhost:5000/api/fetch', { username });
+      setStats(res.data);
+      setError('');
+    } catch {
+      setStats(null);
+      setError('Failed to fetch stats. Make sure the username is correct.');
     }
-  `,
-  variables: { username },
-});
+  };
 
-// POST /api/leetcode
-router.post("/", async (req, res) => {
-  const { username } = req.body;
-
-  try {
-    const response = await axios.post(
-      "https://leetcode.com/graphql",
-      leetcodeQuery(username),
-      { headers: { "Content-Type": "application/json" } }
-    );
-
-    const stats = response.data.data?.matchedUser?.submitStats?.acSubmissionNum;
-
-    if (!stats) {
-      return res.status(404).json({ error: "User not found or data unavailable" });
+  const saveStats = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/save', stats);
+      alert('Saved!');
+    } catch {
+      alert('Failed to save');
     }
+  };
 
-    const easy = stats.find((d) => d.difficulty === "Easy") || { count: 0 };
-    const medium = stats.find((d) => d.difficulty === "Medium") || { count: 0 };
-    const hard = stats.find((d) => d.difficulty === "Hard") || { count: 0 };
-    const total = stats.find((d) => d.difficulty === "All") || { count: 0 };
+  return (
+    <Container maxWidth="sm" style={{ marginTop: 50 }}>
+      <Typography variant="h4" gutterBottom>
+        LeetCode Tracker
+      </Typography>
+      <TextField
+        label="LeetCode Username"
+        variant="outlined"
+        fullWidth
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        style={{ marginBottom: 20 }}
+      />
+      <Button variant="contained" onClick={fetchStats}>
+        Fetch Stats
+      </Button>
+      {error && <Typography color="error">{error}</Typography>}
+      {stats && (
+        <Card style={{ marginTop: 20 }}>
+          <CardContent>
+            <Typography variant="h6">Stats for {stats.username}</Typography>
+            <Typography>Total Solved: {stats.totalSolved}</Typography>
+            <Typography>Easy: {stats.easySolved}</Typography>
+            <Typography>Medium: {stats.mediumSolved}</Typography>
+            <Typography>Hard: {stats.hardSolved}</Typography>
+            <Button
+              variant="outlined"
+              style={{ marginTop: 10 }}
+              onClick={saveStats}
+            >
+              Save to DB
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+    </Container>
+  );
+}
 
-    const totalEasy = 876;
-    const totalMedium = 1840;
-    const totalHard = 833;
-
-    const userData = {
-      username,
-      totalSolved: total.count,
-      easySolved: easy.count,
-      mediumSolved: medium.count,
-      hardSolved: hard.count,
-      totalEasy,
-      totalMedium,
-      totalHard,
-    };
-
-    const savedUser = await User.findOneAndUpdate(
-      { username },
-      userData,
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
-
-    res.json(savedUser);
-  } catch (err) {
-    console.error("Error fetching LeetCode data:", err.message);
-    res.status(500).json({ error: "Failed to fetch data from LeetCode" });
-  }
-});
-
-// GET /api/leetcode/users
-router.get("/users", async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.json(users);
-  } catch (err) {
-    console.error("Error fetching users:", err.message);
-    res.status(500).json({ error: "Failed to fetch users" });
-  }
-});
-
-module.exports = router;
-
+export default LeetCode;
