@@ -2,71 +2,111 @@ import {
   Typography,
   Box,
   Paper,
-  Divider
+  Divider,
+  Button,
 } from "@mui/material";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { styled, keyframes } from "@mui/system";
 import CodingIcon from "./assets/coding-icon.png.png";
-// Animations
+
+// Typing animation
 const typing = keyframes`
-  from { width: 0 }
-  to { width: 100% }
+  from { width: 0ch }
+  to { width: 15ch }
 `;
 
-const blink = keyframes`
-  0% { opacity: 1 }
-  50% { opacity: 0 }
-  100% { opacity: 1 }
+// Sidebar gradient background animation
+const gradientBG = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 `;
 
-// Layout
+// Wrapper layout
 const DashboardWrapper = styled(Box)(() => ({
   display: "flex",
   height: "100vh",
+  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  color: "#fff",
 }));
 
+// Sidebar styles with animated gradient
 const Sidebar = styled(Box)(({ theme }) => ({
   width: "250px",
-  background: "#8e44ad",
+  background: "linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab)",
+  backgroundSize: "400% 400%",
+  animation: `${gradientBG} 15s ease infinite`,
   color: "white",
   padding: theme.spacing(3),
   borderRadius: "20px 0 0 20px",
-  boxShadow: "2px 0 10px rgba(0,0,0,0.1)",
+  boxShadow: "2px 0 15px rgba(0,0,0,0.5)",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   height: "100vh",
-  boxSizing: "border-box"
+  boxSizing: "border-box",
+  position: "fixed",
 }));
 
+// Main content area
 const MainContent = styled(Box)(({ theme }) => ({
+  marginLeft: 250,
   flexGrow: 1,
   padding: theme.spacing(4),
   background: "#f4f0fa",
+  color: "#333",
   overflowY: "auto",
   height: "100vh",
   boxSizing: "border-box",
   display: "flex",
-  flexDirection: "column"
+  flexDirection: "column",
 }));
 
+// Sidebar link items
 const SidebarItem = styled(Typography)(() => ({
   marginBottom: 16,
   cursor: "pointer",
   color: "white",
   textDecoration: "none",
+  fontWeight: "600",
+  fontSize: "1.1rem",
+  transition: "color 0.3s ease",
   "&:hover": {
-    color: "#ffd700"
-  }
+    color: "#ffd700",
+  },
 }));
 
-const FeatureCard = ({ icon, title, description }) => (
-  <Paper elevation={2} sx={{ p: 3, borderRadius: 3, background: "#fff" }}>
-    <Typography variant="h4" mb={1}>{icon}</Typography>
-    <Typography variant="h6">{title}</Typography>
-    <Typography variant="body2">{description}</Typography>
-  </Paper>
-);
+// Feature card styles
+const FeatureCard = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  borderRadius: 16,
+  background: "#fff",
+  color: "#333",
+  boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  textAlign: "center",
+  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+  cursor: "default",
+  "&:hover": {
+    transform: "translateY(-8px)",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+  },
+}));
+
+const IconCircle = styled("div")(({ theme }) => ({
+  fontSize: "3rem",
+  marginBottom: theme.spacing(1),
+}));
+
+const Footer = styled(Box)(({ theme }) => ({
+  marginTop: "auto",
+  padding: theme.spacing(3),
+  backgroundColor: "#333",
+  color: "#fff",
+  textAlign: "center",
+}));
 
 const Dashboard = () => {
   return (
@@ -75,14 +115,14 @@ const Dashboard = () => {
         <img
           src={CodingIcon}
           alt="Coding Icon"
-          width={200}
-          height={200}
-          style={{ borderRadius: "50%" }}
+          width={150}
+          height={150}
+          style={{ borderRadius: "50%", marginBottom: 20 }}
         />
-        <Box mt={2} mb={2} position="relative">
+        <Box mb={3} position="relative" width="100%" textAlign="center">
           <Typography
             sx={{
-              fontSize: "24px",
+              fontSize: "26px",
               fontWeight: "bold",
               background: "linear-gradient(90deg, #ff8a00, #e52e71)",
               WebkitBackgroundClip: "text",
@@ -90,30 +130,18 @@ const Dashboard = () => {
               whiteSpace: "nowrap",
               overflow: "hidden",
               width: "fit-content",
-              animation: `${typing} 2s steps(12, end) forwards`,
-              letterSpacing: "2px",
+              animation: `${typing} 2s steps(15, end) forwards`,
+              letterSpacing: "3px",
               textTransform: "uppercase",
-              position: "relative",
-              "&::after": {
-                content: '""',
-                position: "absolute",
-                right: 0,
-                top: 0,
-                height: "100%",
-                width: "3px",
-                backgroundColor: "white",
-                animation: `${blink} 0.8s step-end`,
-                animationIterationCount: 2,
-                visibility: "hidden"
-              }
+              margin: "auto",
             }}
           >
             Code Tracker
           </Typography>
         </Box>
-        <Divider sx={{ background: "#fff", width: "80%", my: 2 }} />
+
+        <Divider sx={{ background: "#fff", width: "80%", my: 3 }} />
         <SidebarItem component={Link} to="/login">Login</SidebarItem>
-        <SidebarItem component={Link} to="/dashboard">Dashboard</SidebarItem>
         <SidebarItem component={Link} to="/leetcode">LeetCode Tracker</SidebarItem>
         <SidebarItem component={Link} to="/students">Students</SidebarItem>
       </Sidebar>
@@ -123,66 +151,146 @@ const Dashboard = () => {
           elevation={3}
           sx={{
             p: 4,
-            mb: 4,
+            mb: 5,
             borderRadius: 4,
             background: "#dcd0ff",
-            textAlign: "center"
+            textAlign: "center",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
           }}
         >
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h3" gutterBottom>
             🎓 Master Your Coding Journey
           </Typography>
-          <Typography variant="h6" mb={2}>
-            Track your progress across <strong>LeetCode</strong>, <strong>HackerRank</strong>,{" "}
-            and <strong>Codeforces</strong> in one unified dashboard.
+          <Typography variant="h6" mb={3}>
+            Track your progress across <strong>LeetCode</strong>,{" "}
+            <strong>HackerRank</strong>, and <strong>Codeforces</strong> in one unified dashboard.
           </Typography>
-          <Typography variant="body1">
+          <Typography variant="body1" mb={3}>
             🔒 Stay focused. 📈 Stay consistent. 🚀 Grow faster.
           </Typography>
+          <Button
+            variant="contained"
+            size="large"
+            sx={{ background: "linear-gradient(90deg, #ff8a00, #e52e71)" }}
+            component={Link}
+            to="/leetcode"
+          >
+            Get Started Now
+          </Button>
         </Paper>
 
-        <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr' }} gap={3}>
-          <FeatureCard
-            icon="🧠"
-            title="Smart Tracking"
-            description="Automatically sync solved problems from multiple platforms."
-          />
-          <FeatureCard
-            icon="📊"
-            title="Performance Insights"
-            description="Visualize your daily, weekly, and monthly progress easily."
-          />
-          <FeatureCard
-            icon="🎯"
-            title="Goal Setting"
-            description="Set personal milestones to stay on top of your game."
-          />
-          <FeatureCard
-            icon="🔔"
-            title="Reminders & Streak Alerts"
-            description="Keep your streak alive with custom notifications."
-          />
+        <Box
+          display="grid"
+          gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr", md: "repeat(3, 1fr)" }}
+          gap={4}
+        >
+          <FeatureCard>
+            <IconCircle>🧠</IconCircle>
+            <Typography variant="h5" gutterBottom>Smart Tracking</Typography>
+            <Typography variant="body2">
+              Automatically sync solved problems from multiple platforms.
+            </Typography>
+          </FeatureCard>
+
+          <FeatureCard>
+            <IconCircle>📊</IconCircle>
+            <Typography variant="h5" gutterBottom>Performance Insights</Typography>
+            <Typography variant="body2">
+              Visualize your daily, weekly, and monthly progress easily.
+            </Typography>
+          </FeatureCard>
+
+          <FeatureCard>
+            <IconCircle>🎯</IconCircle>
+            <Typography variant="h5" gutterBottom>Goal Setting</Typography>
+            <Typography variant="body2">
+              Set personal milestones to stay on top of your game.
+            </Typography>
+          </FeatureCard>
+
+          <FeatureCard>
+            <IconCircle>🔔</IconCircle>
+            <Typography variant="h5" gutterBottom>Reminders & Streak Alerts</Typography>
+            <Typography variant="body2">
+              Keep your streak alive with custom notifications.
+            </Typography>
+          </FeatureCard>
+
+          <FeatureCard>
+            <IconCircle>🌐</IconCircle>
+            <Typography variant="h5" gutterBottom>Multi-Platform Support</Typography>
+            <Typography variant="body2">
+              Track progress across Codeforces, AtCoder, HackerEarth, and more.
+            </Typography>
+          </FeatureCard>
+
+          <FeatureCard>
+            <IconCircle>🛠️</IconCircle>
+            <Typography variant="h5" gutterBottom>Customizable Dashboard</Typography>
+            <Typography variant="body2">
+              Personalize your dashboard with themes, layouts, and widgets.
+            </Typography>
+          </FeatureCard>
         </Box>
 
         <Paper
           elevation={3}
-          sx={{ p: 4, mt: 5, borderRadius: 4, background: "#ffffff", textAlign: "center" }}
+          sx={{
+            p: 5,
+            mt: 7,
+            borderRadius: 4,
+            background: "#ffffff",
+            color: "#333",
+            textAlign: "center",
+            boxShadow: "0 4px 25px rgba(0,0,0,0.1)",
+          }}
         >
-          <Typography variant="h5" gutterBottom>
-            Why Use Code Tracker?
-          </Typography>
-          <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+          <Typography variant="h4" gutterBottom>Why Use Code Tracker?</Typography>
+          <Typography variant="body1" sx={{ whiteSpace: "pre-line", mb: 2 }}>
             Keeping up with competitive programming is hard.{"\n"}
             Code Tracker brings everything into one place — no more switching tabs, no lost progress.{"\n"}
             Just consistent growth, beautifully visualized.
           </Typography>
+          <Button
+            variant="outlined"
+            size="large"
+            component={Link}
+            to="/about"
+            sx={{ color: "#764ba2", borderColor: "#764ba2" }}
+          >
+            Learn More
+          </Button>
         </Paper>
+
+        <Footer>
+          <Typography variant="body2">
+            &copy; {new Date().getFullYear()} Code Tracker. All rights reserved.
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>
+            Made with ❤️ by a passionate coder.
+          </Typography>
+        </Footer>
       </MainContent>
     </DashboardWrapper>
   );
 };
 
 export default Dashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
